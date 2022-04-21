@@ -4,9 +4,12 @@ import "CoreLibs/sprites"
 import "CoreLibs/timer"
 
 local gfx <const> = playdate.graphics
-local playerSprite = nil
-local playerSpeed = 4
 
+-- Sprites
+local playerSprite = nil
+local pizzaSprite = nil
+-- Timer
+local playerSpeed = 4
 local playTimer = nill
 local playTime = 30 * 1000 -- milliseconds
 
@@ -14,12 +17,25 @@ local function resetTimer()
 	playTimer = playdate.timer.new(playTime, playTime, 0, playdate.easingFunctions.linear)
 end
 
+local function movePizza()
+	local randX = math.random(40,360)
+	local randY = math.random(40,200)
+	pizzaSprite:moveTo(randX, randY)
+end
+
 local function initialize()
+	math.randomseed(playdate.getSecondsSinceEpoch())
+	
 	local playerImage = gfx.image.new("images/player") -- loading an image
 	playerSprite = gfx.sprite.new(playerImage)
 	playerSprite:moveTo(200, 120) -- starts in top-left corner
 	-- ':' because we use moveTo on a particular instance of a sprite !!!
 	playerSprite:add() -- adds sprite to a draw list
+	
+	local pizzaImage = gfx.image.new("images/pizza")
+	pizzaSprite = gfx.sprite.new(pizzaImage)
+	movePizza()
+	pizzaSprite:add()
 	
 	--[[
 	setBackgroundDrawingCallback:
@@ -50,6 +66,7 @@ function playdate.update()
 	if playTimer.value == 0 then
 		if playdate.buttonJustPressed(playdate.kButtonA) then
 			resetTimer()
+			movePizza()
 		end
 	else
 		if playdate.buttonIsPressed(playdate.kButtonUp) then
