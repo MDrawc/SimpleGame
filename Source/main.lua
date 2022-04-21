@@ -12,6 +12,10 @@ local pizzaSprite = nil
 local playerSpeed = 4
 local playTimer = nill
 local playTime = 30 * 1000 -- milliseconds
+-- Other
+local score = 0
+
+
 
 local function resetTimer()
 	playTimer = playdate.timer.new(playTime, playTime, 0, playdate.easingFunctions.linear)
@@ -32,10 +36,14 @@ local function initialize()
 	-- ':' because we use moveTo on a particular instance of a sprite !!!
 	playerSprite:add() -- adds sprite to a draw list
 	
+	playerSprite:setCollideRect(0, 0, playerSprite:getSize())
+	
 	local pizzaImage = gfx.image.new("images/pizza")
 	pizzaSprite = gfx.sprite.new(pizzaImage)
 	movePizza()
 	pizzaSprite:add()
+	
+	pizzaSprite:setCollideRect(0, 0, pizzaSprite:getSize())
 	
 	--[[
 	setBackgroundDrawingCallback:
@@ -67,6 +75,7 @@ function playdate.update()
 		if playdate.buttonJustPressed(playdate.kButtonA) then
 			resetTimer()
 			movePizza()
+			score = 0
 		end
 	else
 		if playdate.buttonIsPressed(playdate.kButtonUp) then
@@ -84,11 +93,18 @@ function playdate.update()
 		if playdate.buttonIsPressed(playdate.kButtonLeft) then
 			playerSprite:moveBy(-playerSpeed, 0)
 		end
+		
+		local collisions = pizzaSprite:overlappingSprites()
+		if #collisions >= 1 then
+			movePizza()
+			score += 1
+		end
 	end
 	
 	playdate.timer.updateTimers()
 	gfx.sprite.update() -- update everything in a draw list
 	gfx.drawText("*Time: *" .. math.ceil(playTimer.value/1000), 10, 10) -- ".." string concatenation 
+	gfx.drawText("*Score: *" .. score, 315, 10) -- ".." string concatenation 
 end
 
 
