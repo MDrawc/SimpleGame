@@ -7,6 +7,12 @@ local gfx <const> = playdate.graphics
 local playerSprite = nil
 local playerSpeed = 4
 
+local playTimer = nill
+local playTime = 30 * 1000 -- milliseconds
+
+local function resetTimer()
+	playTimer = playdate.timer.new(playTime, playTime, 0, playdate.easingFunctions.linear)
+end
 
 local function initialize()
 	local playerImage = gfx.image.new("images/player") -- loading an image
@@ -33,33 +39,39 @@ local function initialize()
 			gfx.clearClipRect() -- clear so we don't interfere with drawing that comes after this
 		end
 	)	
+	
+	resetTimer()
 end
-
-
-
 
 initialize()
 
 function playdate.update()
 	
-	if playdate.buttonIsPressed(playdate.kButtonUp) then
-		playerSprite:moveBy(0, -playerSpeed)
-	end
-	
-	if playdate.buttonIsPressed(playdate.kButtonRight) then
-		playerSprite:moveBy(playerSpeed, 0)
-	end
-	
-	if playdate.buttonIsPressed(playdate.kButtonDown) then
-		playerSprite:moveBy(0, playerSpeed)
-	end
-	
-	if playdate.buttonIsPressed(playdate.kButtonLeft) then
-		playerSprite:moveBy(-playerSpeed, 0)
+	if playTimer.value == 0 then
+		if playdate.buttonJustPressed(playdate.kButtonA) then
+			resetTimer()
+		end
+	else
+		if playdate.buttonIsPressed(playdate.kButtonUp) then
+			playerSprite:moveBy(0, -playerSpeed)
+		end
+		
+		if playdate.buttonIsPressed(playdate.kButtonRight) then
+			playerSprite:moveBy(playerSpeed, 0)
+		end
+		
+		if playdate.buttonIsPressed(playdate.kButtonDown) then
+			playerSprite:moveBy(0, playerSpeed)
+		end
+		
+		if playdate.buttonIsPressed(playdate.kButtonLeft) then
+			playerSprite:moveBy(-playerSpeed, 0)
+		end
 	end
 	
 	playdate.timer.updateTimers()
 	gfx.sprite.update() -- update everything in a draw list
+	gfx.drawText("*Time: *" .. math.ceil(playTimer.value/1000), 10, 10) -- ".." string concatenation 
 end
 
 
