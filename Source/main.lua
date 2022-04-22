@@ -15,8 +15,6 @@ local playTime = 30 * 1000 -- milliseconds
 -- Other
 local score = 0
 
-
-
 local function resetTimer()
 	playTimer = playdate.timer.new(playTime, playTime, 0, playdate.easingFunctions.linear)
 end
@@ -29,7 +27,7 @@ end
 
 local function initialize()
 	math.randomseed(playdate.getSecondsSinceEpoch())
-	
+		
 	local playerImage = gfx.image.new("images/player") -- loading an image
 	playerSprite = gfx.sprite.new(playerImage)
 	playerSprite:moveTo(200, 120) -- starts in top-left corner
